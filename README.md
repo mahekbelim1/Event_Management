@@ -1,192 +1,155 @@
-📌 Event Management System – Django REST API
+A Django REST Framework project that provides APIs for event creation, RSVPs, and reviews with JWT authentication and custom permissions.
 
-A fully functional Event Management API built using Django and Django REST Framework (DRF).
-Users can create events, RSVP to events, leave reviews, and view public or invited-only events.
-Includes JWT authentication, custom permissions, pagination, filtering, and unit tests.
+1. Overview
+-The Event Management API enables users to:
+-Create, update, and delete events
+-RSVP to events
+-Submit reviews
+-Access public events or private events if invited
+-Authenticate using JWT tokens
+-Use filtering, searching, and pagination features
+-Run automated unit tests
+This project demonstrates practical use of Django REST Framework, authentication, permissions, model relationships, and API design.
 
-🚀 Features
-✅ User Profiles
+2. Features
+-JWT authentication (SimpleJWT)
+-Event CRUD operations
+-RSVP system
+-Review system with duplicate-review protection
+-Custom permissions
+-Only organizer can edit/delete event
+-Private events visible only to invited users
+-Search, filtering, and ordering
+-Pagination
+-Automated unit tests
+-Django admin support
 
-Extends Django's built-in User model.
+3. Project Structure
+event_api/
+    event_api/
+        settings.py
+        urls.py
+        wsgi.py
+    events/
+        models.py
+        serializers.py
+        permissions.py
+        views.py
+        urls.py
+        tests/
+            test_api.py
+    manage.py
+requirements.txt
+README.md
 
-Includes fields: full_name, bio, location, profile_picture.
+4. How to Run the Project
+4.1 Clone the Repository
+git clone https://github.com/<your-username>/<repo-name>.git
+cd <repo-name>
 
-✅ Event Management
-
-Create, update, delete events (organizer only).
-
-Public and private events.
-
-Invite users to private events.
-
-Auto-store organizer during event creation.
-
-✅ RSVP System
-
-Users can mark: Going, Maybe, Not Going.
-
-Users can update RSVP status anytime.
-
-✅ Reviews
-
-Users can post reviews.
-
-Duplicate reviews from the same user are prevented.
-
-✅ Authentication
-
-JWT-based login using:
-
-/api/token/
-/api/token/refresh/
-
-✅ Permissions
-
-Only organizers may edit or delete events.
-
-Private events visible only to invited users.
-
-Public events open to all.
-
-✅ Pagination, Filtering, Search
-
-Pagination enabled on all list endpoints.
-
-Filter events by:
-
-title
-
-location
-
-organizer
-
-Search events by title or description.
-
-✅ Unit Tests Included
-
-Covers:
-
-Event creation
-
-RSVP creation & update
-
-Review posting and prevention of duplicates
-
-Public events listing
-
-📁 Project Structure
-event_management/
-│── event_api/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│── events/
-│   ├── models.py
-│   ├── serializers.py
-│   ├── views.py
-│   ├── permissions.py
-│   ├── tests/
-│       ├── test_api.py
-│── manage.py
-
-⚙️ Installation & Setup
-1️⃣ Clone the Repository
-git clone <your-repo-url>
-cd event_management/event_api
-
-2️⃣ Create Virtual Environment
+4.2 Create and Activate Virtual Environment
+Windows (PowerShell):
 python -m venv venv
-
-3️⃣ Activate Environment
-
-Windows:
-
 venv\Scripts\activate
 
-4️⃣ Install Dependencies
+
+Mac / Linux:
+python3 -m venv venv
+source venv/bin/activate
+
+4.3 Install Dependencies
 pip install -r requirements.txt
 
-5️⃣ Apply Migrations
+4.4 Apply Database Migrations
 python manage.py makemigrations
 python manage.py migrate
 
-6️⃣ Create Superuser
+4.5 Create Superuser
 python manage.py createsuperuser
 
-7️⃣ Run Development Server
+4.6 Run the Development Server
 python manage.py runserver
 
-🔑 Authentication
-Obtain JWT Token
+
+API will be available at:
+http://127.0.0.1:8000/api/events/
+http://127.0.0.1:8000/api/token/
+http://127.0.0.1:8000/admin/
+
+5. Authentication (JWT)
+5.1 Obtain Token
 POST /api/token/
+Body:
 {
   "username": "your_username",
   "password": "your_password"
 }
 
-
-The response will contain:
-
-{
-  "refresh": "xxxxx",
-  "access": "xxxxx"
-}
-
-
-Use access token in headers:
+5.2 Use Access Token
+Add header:
 Authorization: Bearer <access_token>
 
-🔗 API Endpoints
+6. API Endpoints
+Event Endpoints
+GET /api/events/ → List public events
+POST /api/events/ → Create event (auth required)
+GET /api/events/<id>/ → Retrieve event
+PUT /api/events/<id>/ → Update event (organizer only)
+DELETE /api/events/<id>/ → Delete event (organizer only)
+RSVP Endpoints
+POST /api/events/<id>/rsvp/
+PATCH /api/events/<id>/rsvp/<user_id>/
+Review Endpoints
+POST /api/events/<id>/reviews/
+GET /api/events/<id>/reviews/
 
-🎫 Events
-Method	Endpoint	Description
-POST	/api/events/	Create event
-GET	/api/events/	List all public events
-GET	/api/events/{id}/	Event details
-PUT	/api/events/{id}/	Update event (organizer only)
-DELETE	/api/events/{id}/	Delete event (organizer only)
+7. Filtering, Searching, Pagination
+Filtering
 
-📌 RSVP
-Method	Endpoint
-POST	/api/events/{id}/rsvp/
-PATCH	/api/events/{id}/rsvp/{user_id}/
+Examples:
+/api/events/?location=Ahmedabad
+/api/events/?organizer=1
 
-⭐ Reviews
-Method	Endpoint
-POST	/api/events/{id}/reviews/
-GET	/api/events/{id}/reviews/
+Searching
+/api/events/?search=Music
 
-🧪 Running Unit Tests
-python manage.py test events -v 2
+Ordering
+/api/events/?ordering=start_time
 
-📝 Technologies Used
+Pagination
+Enabled by default (page size = 10):
+/api/events/?page=2
 
-Django 6+
-Django REST Framework
-SimpleJWT
-SQLite (default)
-Python 3.13
+8. Running Unit Tests
+python manage.py test -v 2
 
-🎯 Bonus Features Implemented
+-Includes tests for:
+-Event creation
+-RSVPs
+-Reviews
+-Permissions
+-Anonymous and authenticated access
 
-✔ JWT authentication
-✔ Custom permissions
-✔ Pagination
-✔ Search and filtering
-✔ Unit tests
+9. Requirements
+Generated automatically in requirements.txt using:
+pip freeze > requirements.txt
 
+Key packages:
+-Django
+-Django REST Framework
+-SimpleJWT
+-django-filter
 
-📚 Future Enhancements
+10. Notes for Evaluators
+-No database setup required (SQLite used)
+-All core features implemented
+-Unit tests included
+-Project follows REST API best practices
+-Fully documented and ready to extend
 
-Email notifications on event creation
-Asynchronous tasks via Celery
-Full Docker container setup
-Frontend dashboard (React or Vue)
-
-
-📄 License
-
+11. License
 This project is created for internship assignment purposes.
+
 
 
 
